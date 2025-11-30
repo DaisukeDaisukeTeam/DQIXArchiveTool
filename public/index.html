@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GP2 Decompiler (Non‑Commercial)</title>
+  <link rel="stylesheet" href="./style.css">
+  <meta name="description" content="Local, in‑browser GP2 decompiler. No uploads.">
+  <script>
+    // Capture stdout/stderr from C++
+    var Module = {
+      print: (function() {
+        return function(text) {
+          const el = document.getElementById('log');
+          if (el) { el.value += text + "\n"; el.scrollTop = el.scrollHeight; }
+          console.log(text);
+        }
+      })(),
+      printErr: function(text) {
+        const el = document.getElementById('log');
+        if (el) { el.value += "[ERR] " + text + "\n"; el.scrollTop = el.scrollHeight; }
+        console.error(text);
+      },
+      onRuntimeInitialized: function() {
+        document.getElementById('status').textContent = 'Ready';
+        window.appInit && window.appInit();
+      }
+    };
+  </script>
+  <script src="./gp2.js"></script>
+  <script src="./app.js" defer></script>
+  <style>
+    /* Fallback if CSS not loaded */
+    .hidden { display:none; }
+  </style>
+  <!-- Non-commercial notice: This UI is for non‑commercial use only. -->
+</head>
+<body>
+  <header>
+    <h1>GP2 Decompiler (WebAssembly, Non‑Commercial)</h1>
+    <div id="status">Loading...</div>
+  </header>
+  <main>
+    <section class="panel">
+      <div id="dropzone" class="dropzone" tabindex="0">
+        <p>ここに GP2 もしくは対応ファイルをドラッグ＆ドロップ</p>
+        <p>または <label class="file-label"><input id="fileInput" type="file" multiple>ファイルを選択</label></p>
+      </div>
+      <div class="actions">
+        <button id="btnClearExport" type="button">/export をクリア</button>
+        <button id="btnZipAll" type="button" disabled>すべてZIPでダウンロード</button>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>出力ファイル一覧</h2>
+      <div id="fileList" class="file-list empty">まだ出力はありません</div>
+    </section>
+
+    <section class="panel">
+      <h2>sprintf デバッガ / ログ</h2>
+      <textarea id="log" class="log" spellcheck="false" placeholder="C++ の printf / fprintf(stderr, ...) 出力がここに表示されます"></textarea>
+      <div class="actions">
+        <button id="btnClearLog" type="button">ログをクリア</button>
+        <button id="btnSaveLog" type="button">ログを保存</button>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <small>すべての処理はブラウザ内で行われ、外部へ送信されません。非商用目的でのみ使用してください。</small>
+  </footer>
+</body>
+</html>
