@@ -169,17 +169,17 @@
     fileList.appendChild(ul);
   }
 
-  // NARC helpers
-  const narcCache = new Map(); // path -> [{name,data(U8)}]
-  function isNarc(path){
-    try{
-      const u8 = Module.FS.readFile(path);
-      return u8.length >= 4 && u8[0]===0x4E && u8[1]===0x41 && u8[2]===0x52 && u8[3]===0x43; // 'NARC'
-    }catch(_){ return false; }
-  }
-  function sanitizeZipName(name){
-    return (name||'file.bin').replace(/^[\\/]+/,'').replace(/\.+\//g,'');
-  }
+    // NARC helpers
+    const narcCache = new Map(); // path -> [{name,data(U8)}]
+    function isNarc(path){
+        try{
+            const u8 = Module.FS.readFile(path);
+            return u8.length >= 4 && u8[0]===0x4E && u8[1]===0x41 && u8[2]===0x52 && u8[3]===0x43; // 'NARC'
+        }catch(_){ return false; }
+    }
+    function sanitizeZipName(name){
+        return (name||'file.bin').replace(/^[\\/]+/,'').replace(/\.+\//g,'');
+    }
   async function decodeNarc(path){
     if (narcCache.has(path)) return narcCache.get(path);
     const data = Module.FS.readFile(path);
@@ -357,7 +357,18 @@
     rm('/export');
     try { Module.FS.rmdir('/export'); } catch(_) {}
     try { Module.FS.mkdir('/export'); } catch(_) {}
+    try { Module.FS.mkdir('/tmp'); } catch(_) {}
+    narcCache.clear();
     refreshExportList();
+  }
+
+  function autoResetBeforeImport(){
+    const hasOut = walkDir('/export').length > 0;
+    if (hasOut){
+      clearExport();
+    } else {
+      narcCache.clear();
+    }
   }
 
   function setupDnD(){
@@ -370,10 +381,12 @@
     dropzone.addEventListener('drop', async (e)=>{
       dropzone.classList.remove('hover');
       const files = e.dataTransfer.files;
+      autoResetBeforeImport();
       for (const f of files) await processFile(f);
     });
     fileInput.addEventListener('change', async (e)=>{
       const files = e.target.files;
+      autoResetBeforeImport();
       for (const f of files) await processFile(f);
       fileInput.value = '';
     });

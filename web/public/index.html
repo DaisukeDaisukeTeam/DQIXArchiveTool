@@ -78,6 +78,9 @@
     .narc-contents{grid-column:1/-1;background:rgba(0,0,0,0.05);border-radius:8px;padding:8px;margin-top:6px}
     .narc-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px}
     .narc-row{display:grid;grid-template-columns:1fr auto auto;gap:8px;align-items:center;padding:6px 8px;border:1px dashed var(--acc);border-radius:6px}
+    /* Ensure nested NARC buttons don't look overly bright and don't accumulate overlays */
+    .narc-row .btn{background:var(--panel);color:var(--fg);border:1px solid var(--bg)}
+    .narc-row .btn:hover{background:var(--hover)}
     .log{width:100%;height:180px;background:var(--panel);color:var(--fg);border:1px solid var(--acc);border-radius:8px;padding:10px;font-family:ui-monospace,Consolas,Monaco,Menlo,monospace}
     footer{max-width:980px;margin:0 auto 40px;padding:0 16px;color:var(--muted)}
     .hidden{display:none}
